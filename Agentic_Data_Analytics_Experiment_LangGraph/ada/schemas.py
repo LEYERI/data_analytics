@@ -1,25 +1,9 @@
-"""Pydantic input/output schemas for every agent."""
+"""Pydantic output schemas for every agent."""
 from __future__ import annotations
 
 from typing import Literal, Optional
 
 from pydantic import BaseModel, Field
-
-PHASES = ["business_objectives", "define_data", "collect_data", "prepare_store",
-          "eda", "modeling", "evaluation", "present_results"]
-
-
-class AgentInput(BaseModel):
-    """What every agent receives: a compact brief, never raw data."""
-    run_id: str
-    node: str
-    objective: str
-    region: Optional[str] = None
-    objective_spec: Optional[dict] = None
-    context: dict = Field(default_factory=dict, description="compact summaries of earlier phases")
-    guidance: list[str] = Field(default_factory=list, description="critic / supervisor feedback for this visit")
-    workspace_files: list[str] = Field(default_factory=list)
-    offline: bool = False
 
 
 # --- business_objectives -----------------------------------------------------
@@ -33,6 +17,8 @@ class ObjectiveSpec(BaseModel):
     success_threshold: float = Field(description="value of primary_metric that counts as success (mape as a fraction, e.g. 0.15)")
     baseline: str = Field(description="naive baseline the model must beat, e.g. 'median rent of the training set'")
     region: Optional[str] = None
+    data_origin: Literal["collected", "simulated"] = Field(
+        "collected", description="'simulated' only when the user explicitly asks for simulated/synthetic data")
     constraints: list[str] = Field(default_factory=list)
     assumptions: list[str] = Field(default_factory=list)
     ambiguities: list[str] = Field(default_factory=list)
@@ -105,8 +91,8 @@ class EDAOutput(BaseModel):
     requested_changes: list[str] = Field(default_factory=list)
 
 
-# --- modeling ----------------------------------------------------------------------
-class ModelingOutput(BaseModel):
+# --- statistics & modeling (node key: modeling) ------------------------------------
+class StatisticsModelingOutput(BaseModel):
     best_model_name: str
     features_used: list[str]
     experiments_run: int

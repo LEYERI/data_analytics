@@ -14,7 +14,6 @@ from ada.config import Config
 from ada.evaluation import metrics as M
 from ada.store import RunStore, sha256_file
 
-TABULAR = {".csv", ".tsv", ".parquet", ".json", ".xlsx", ".xls", ".geojson", ".txt", ".zip", ".gz", ".xml"}
 POST_HOC_WORDS = ("sold", "final_price", "closing", "outcome", "after_", "post_", "result", "actual_")
 ID_WORDS = ("id", "url", "link", "uuid", "key", "index", "listing_number", "ref")
 
@@ -343,8 +342,8 @@ def check_eda(output: dict | None, *, store: RunStore, **_: Any) -> list[CheckRe
 
 def check_modeling(output: dict | None, *, store: RunStore, cfg: Config, state: dict,
                    validation: dict | None, holdout_ids: set[str], **_: Any) -> list[CheckResult]:
-    from ada.schemas import ModelingOutput
-    res = [_schema("modeling_schema", output, ModelingOutput)]
+    from ada.schemas import StatisticsModelingOutput
+    res = [_schema("modeling_schema", output, StatisticsModelingOutput)]
     if not store.exists("models/best_model.pkl"):
         res.append(fail("model_saved", "models/best_model.pkl missing (use ada_kit.save_model)"))
         return res
@@ -429,7 +428,3 @@ CHECKS: dict[str, Callable[..., list[CheckResult]]] = {
     "evaluation": check_evaluation,
     "present_results": check_present_results,
 }
-
-
-def summarize(checks: list[CheckResult]) -> str:
-    return json.dumps([c.to_dict() for c in checks], default=str)
