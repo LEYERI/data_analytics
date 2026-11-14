@@ -146,6 +146,7 @@ Klicke auf deine Codezelle und drücke **Shift + Enter**. Falls darunter eine Fe
 > ...
 > *Output is truncated. View as a scrollable element or open in a text editor. Adjust cell output settings...*
 
+**Python findet die CSV-Datei im aktuellen Arbeitsordner nicht.** Das sagt die letzte Zeile:
 
 ```text
 FileNotFoundError: [Errno 2] No such file or directory:
